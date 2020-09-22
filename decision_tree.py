@@ -50,6 +50,6 @@ tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 
 # Make predictions for submission
 y_final = clf.predict(Test.iloc[:,1:])
-sub = Test[['PassengerId']]
+sub = Test[['PassengerId']].astype(int) # Kaggle expects integer
 sub['Survived'] = y_final
 sub.to_csv('./Predictions/dt_submission.csv', index=False)
