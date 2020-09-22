@@ -21,9 +21,7 @@ def feat_eng(df):
     
     # Fill missing values in Age using Median
     imp = SimpleImputer(missing_values=np.nan, strategy='median')
-    Age = np.array(df['Age'])
-    Age = imp.fit_transform(Age.reshape(-1,1))
-    df['Age'] = Age
+    df = pd.DataFrame(imp.fit_transform(df), columns=df.columns)
     
     return df
 
