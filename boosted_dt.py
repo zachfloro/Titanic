@@ -23,8 +23,10 @@ Test = feat_eng(Test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=13)
 
 # Train a decision tree using grid search and cross validation
-dt = DecisionTreeClassifier(random_state=13, criterion='gini', max_depth=1)
-clf = AdaBoostClassifier(base_estimator = dt, random_state=13, learning_rate = 1, n_estimators = 500)
+dt = DecisionTreeClassifier(random_state=13, criterion='gini')
+parameters = {'n_estimators':[10, 50, 100, 500, 1000], 'learning_rate':[0.1, 0.01, 0.001, 1],'base_estimator__max_depth':(None, 1, 3, 5, 10, 25), 'base_estimator__min_samples_split':(2, 4, 8, 16, 32), 'base_estimator__max_features':['sqrt', 'log2'], 'base_estimator__min_impurity_decrease':[0.0, 0.01, 0.05, 0.1, 0.5, 1]} # Set parameters to be used in gridsearch
+ada = AdaBoostClassifier(base_estimator = dt, learning_rate=0.01, random_state=13)
+clf = GridSearchCV(ada, parameters, cv=3) # perform gridsearch and cross validation
 clf.fit(X_train.iloc[:,1:], y_train)
 
 # Check how well this model predicts our training sample
@@ -48,4 +50,4 @@ tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 y_final = clf.predict(Test.iloc[:,1:])
 sub = Test[['PassengerId']].astype(int) # Kaggle expects integer
 sub['Survived'] = y_final
-sub.to_csv('./Predictions/ada_submission.csv', index=False)
+sub.to_csv('./Predictions/dt_submission.csv', index=False)
