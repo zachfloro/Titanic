@@ -19,6 +19,12 @@ y = np.array(train['Survived'])
 X = train.drop(columns=['Survived'])
 
 # Feature Engineer on X
+#train_test = pd.concat([X,Test]).reset_index()
+#train_test = feat_eng(train_test)
+#X = train_test.loc[X['PassengerId']]
+#X.drop(columns=['index'],inplace=True)
+#Test = train_test.loc[Test['PassengerId']]
+#Test.drop(columns=['index'],inplace=True)
 X = feat_eng(X)
 Test = feat_eng(Test)
 
