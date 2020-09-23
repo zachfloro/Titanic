@@ -14,25 +14,36 @@ def feat_eng(df):
     # Drop Name, Ticket & Cabin columns
     df.drop(columns=['Name', 'Ticket', 'Cabin'], inplace=True)
     
-    # Create boolean columns for sex and Embarked and Pclass
-    dummies = pd.get_dummies(df[['Sex', 'Embarked', 'Pclass']])
-    df.drop(columns=['Sex', 'Embarked', 'Pclass'],inplace=True)
+    # Create boolean columns for Embarked
+    dummies = pd.get_dummies(df[['Embarked']])
+    df.drop(columns=['Embarked'],inplace=True)
     df = df.merge(dummies, how='inner', left_index=True, right_index=True)
-    # Only keep female boolean
-    df.drop(columns=['Sex_male'],inplace=True)
+    # convert sex to 1 = female, 0 = male
+    df['Sex'] = df['Sex'].map({'male':0, 'female':1})
     
     # Fill missing values in Age using Median
     imp = SimpleImputer(missing_values=np.nan, strategy='median')
     df = pd.DataFrame(imp.fit_transform(df), columns=df.columns)
     
-    # Create new column to determine if they were a child or elderly
-    df['child'] = df['Age'] < 10
-    df['elderly'] = df['Age'] >= 60
+    # Convert Age column into boolean columns
+    df['<10'] = df['Age'] < 10
+    df['10-20'] = (df['Age'] >= 10) & (df['Age'] < 20)
+    df['20-40'] = (df['Age'] >= 20) & (df['Age'] < 40)
+    df['40-60'] = (df['Age'] >= 40) & (df['Age'] < 60)
+    df['>60'] = df['Age'] >= 60
     
     # Drop Age
     df.drop(columns=['Age'], inplace=True)
     
-
+    # Convert Fare column into boolean columns
+    df['Fare_25'] = df['Fare'] <= 25
+    df['Fare_50'] = (df['Fare'] > 25) & (df['Fare'] <= 50)
+    df['Fare_150'] = (df['Fare'] > 50) & (df['Fare'] <= 150)
+    df['Fare_275'] = (df['Fare'] > 150) & (df['Fare'] <= 275)
+    df['Fare_other'] = df['Fare'] > 275
+    
+    # Drop Fare
+    df.drop(columns=['Fare'], inplace=True)
     
     return df
 
